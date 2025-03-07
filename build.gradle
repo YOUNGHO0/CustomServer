@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.dev'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // JDBC 관련 의존성
+    implementation 'mysql:mysql-connector-java:8.0.26' // MySQL 연결을 위한 JDBC 드라이버
+    // HikariCP 의존성
+    implementation 'com.zaxxer:HikariCP:5.0.0'
+    // DBCP 의존성
+    implementation 'org.apache.commons:commons-dbcp2:2.9.0'
+    // C3P0 의존성
+    implementation 'com.mchange:c3p0:0.9.5.5'
+    // Jackson ObjectMapper 의존성 추가
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+}
+
+test {
+    useJUnitPlatform()
+}
