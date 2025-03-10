@@ -22,6 +22,10 @@ dependencies {
     implementation 'com.mchange:c3p0:0.9.5.5'
     // Jackson ObjectMapper 의존성 추가
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3' // 적절한 버전을 사용하세요
+    implementation 'org.slf4j:slf4j-api:2.0.0'  // SLF4J API
+    implementation 'ch.qos.logback:logback-classic:1.4.5'  // Logback 로깅 구현체
+
 }
 
 test {

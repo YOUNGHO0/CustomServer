@@ -25,8 +25,13 @@ public class Main {
     RequestHandler handler;
 
     Main(){
-       // this.dataSource = new HikariCPDataSource("test","hello","hi"); // 예시: DataSource 객체 생성
-        this.requestService = new RequestService(null);
+
+        String url = "jdbc:mariadb://localhost:3306/spring";
+        String user = "root"; // 사용자 이름 (기본은 root)
+        String password = "root"; // 비밀번호 (설정한 비밀번호)
+        HikariCPDataSource dataSource = new HikariCPDataSource(url, user, password);
+
+        this.requestService = new RequestService(dataSource);
         this.handler = new AsyncRequestHandler(requestService);
     }
 
