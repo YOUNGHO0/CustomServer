@@ -1,7 +1,13 @@
 package com.dev.handler;
 
-import java.util.concurrent.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AsyncRequestHandler implements RequestHandler {
 
@@ -13,44 +19,58 @@ public class AsyncRequestHandler implements RequestHandler {
     }
 
     @Override
-    public String handlePost(Map<String, Object> request) {
-        Future<String> future = threadPool.submit(() -> requestService.handlePost(request));
-        return buildHttpResponse(future);
+    public void handlePost(Socket clientSocket, Map<String, Object> request) {
+        System.out.println(clientSocket.hashCode() + " " + clientSocket.isClosed());
+        CompletableFuture.supplyAsync(() -> requestService.handlePost(request), threadPool)
+                .thenAccept(response -> {
+                    sendResponse(clientSocket, response);
+                    try {
+                        clientSocket.close(); // 비동기 작업 후에 소켓을 닫는다
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     @Override
-    public String handleGet() {
-        Future<String> future = threadPool.submit(requestService::handleGet);
-        return buildHttpResponse(future);
+    public void handleGet(Socket clientSocket) {
+        CompletableFuture.supplyAsync(requestService::handleGet, threadPool)
+                .thenAccept(response -> sendResponse(clientSocket, response));
     }
 
     @Override
-    public String handlePut(Map<String, Object> request) {
-        Future<String> future = threadPool.submit(() -> requestService.handlePut(request));
-        return buildHttpResponse(future);
+    public void handlePut(Socket clientSocket, Map<String, Object> request) {
+        CompletableFuture.supplyAsync(() -> requestService.handlePut(request), threadPool)
+                .thenAccept(response -> sendResponse(clientSocket, response));
     }
 
     @Override
-    public String handleDelete(Map<String, Object> request) {
-        Future<String> future = threadPool.submit(() -> requestService.handleDelete(request));
-        return buildHttpResponse(future);
+    public void handleDelete(Socket clientSocket, Map<String, Object> request) {
+        CompletableFuture.supplyAsync(() -> requestService.handleDelete(request), threadPool)
+                .thenAccept(response -> sendResponse(clientSocket, response));
     }
 
-    private String buildHttpResponse(Future<String> future) {
+    private void sendResponse(Socket clientSocket, String responseBody) {
         try {
-            String responseBody = future.get(); // 결과 값을 가져옴
+            OutputStream outputStream = clientSocket.getOutputStream();
+            PrintWriter out = new PrintWriter(outputStream, true);
             int contentLength = responseBody.getBytes().length;
-            return "HTTP/1.1 200 OK\r\n" +
+            String response = "HTTP/1.1 200 OK\r\n" +
                     "Content-Type: text/plain\r\n" +
                     "Content-Length: " + contentLength + "\r\n" +
                     "\r\n" +
                     responseBody;
+
+            out.write(response);
+            out.flush();
         } catch (Exception e) {
-            return "HTTP/1.1 500 Internal Server Error\r\n" +
-                    "Content-Type: text/plain\r\n" +
-                    "Content-Length: 21\r\n" +
-                    "\r\n" +
-                    "Internal Server Error";
+            e.printStackTrace();
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

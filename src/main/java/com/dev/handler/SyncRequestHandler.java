@@ -1,4 +1,8 @@
 package com.dev.handler;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Map;
 
 public class SyncRequestHandler implements RequestHandler {
@@ -10,23 +14,45 @@ public class SyncRequestHandler implements RequestHandler {
     }
 
     @Override
-    public String handlePost(Map<String, Object> request) {
-        return buildHttpResponse(requestService.handlePost(request));
+    public void handlePost(Socket clientSocket, Map<String, Object> request) {
+        String responseBody = requestService.handlePost(request);
+        sendResponse(clientSocket, responseBody);
     }
 
     @Override
-    public String handleGet() {
-        return buildHttpResponse(requestService.handleGet());
+    public void handleGet(Socket clientSocket) {
+        String responseBody = requestService.handleGet();
+        sendResponse(clientSocket, responseBody);
     }
 
     @Override
-    public String handlePut(Map<String, Object> request) {
-        return buildHttpResponse(requestService.handlePut(request));
+    public void handlePut(Socket clientSocket, Map<String, Object> request) {
+        String responseBody = requestService.handlePut(request);
+        sendResponse(clientSocket, responseBody);
     }
 
     @Override
-    public String handleDelete(Map<String, Object> request) {
-        return buildHttpResponse(requestService.handleDelete(request));
+    public void handleDelete(Socket clientSocket, Map<String, Object> request) {
+        String responseBody = requestService.handleDelete(request);
+        sendResponse(clientSocket, responseBody);
+    }
+
+    private void sendResponse(Socket clientSocket, String responseBody) {
+        try (OutputStream outputStream = clientSocket.getOutputStream();
+             PrintWriter out = new PrintWriter(outputStream, true)) {
+
+            String response = buildHttpResponse(responseBody);
+            out.write(response);
+            out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                clientSocket.close(); // 응답 후 소켓 닫기
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private String buildHttpResponse(String responseBody) {
