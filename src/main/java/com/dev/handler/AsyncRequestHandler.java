@@ -20,7 +20,7 @@ public class AsyncRequestHandler implements RequestHandler {
 
     @Override
     public void handlePost(Socket clientSocket, Map<String, Object> request) {
-        System.out.println(clientSocket.hashCode() + " " + clientSocket.isClosed());
+//        System.out.println(clientSocket.hashCode() + " " + clientSocket.isClosed());
         CompletableFuture.supplyAsync(() -> requestService.handlePost(request), threadPool)
                 .thenAccept(response -> {
                     sendResponse(clientSocket, response);

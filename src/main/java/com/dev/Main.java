@@ -94,7 +94,7 @@ public class Main {
                     break;
             }
 
-        System.out.println("Socket "+ clientSocket.hashCode() + " " + clientSocket.isClosed());
+//        System.out.println("Socket "+ clientSocket.hashCode() + " " + clientSocket.isClosed());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,6 +102,7 @@ public class Main {
 
     private Map<String,Object> extractJsonMap(StringBuilder requestBody) {
         Map<String, Object> jsonMap;
+//        System.out.println("parse start");
         try {
             // Jackson ObjectMapper를 사용하여 JSON을 파싱
             ObjectMapper objectMapper = new ObjectMapper();
@@ -112,6 +113,7 @@ public class Main {
             return new HashMap<String,Object>();
         }
 
+//        System.out.println("parse end");
         return jsonMap;
     }
 
@@ -127,6 +129,7 @@ public class Main {
                 break;
             }
         }
+//        System.out.println("parse end : " + requestBody.toString());
         return requestBody;
     }
 
