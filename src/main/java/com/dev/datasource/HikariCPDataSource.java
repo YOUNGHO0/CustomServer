@@ -13,6 +13,7 @@ public class HikariCPDataSource implements DataSource {
         config.setJdbcUrl(url);
         config.setUsername(user);
         config.setPassword(password);
+        config.setMaximumPoolSize(100);
         this.dataSource = new HikariDataSource(config);
     }
 
