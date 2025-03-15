@@ -1,9 +1,27 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.0.0'  // Shadow 플러그인 추가
+}
+
+mainClassName = 'com.dev.Main'
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': mainClassName  // 메인 클래스 지정
+        )
+    }
 }
 
 group = 'com.dev'
 version = '1.0-SNAPSHOT'
+
+shadowJar {
+    mergeServiceFiles()  // 여러 JAR 파일에서 서비스 파일을 병합하는 옵션
+    archiveBaseName.set('YourAppName')  // 생성될 JAR 파일의 이름을 설정
+    archiveVersion.set('1.0-SNAPSHOT')  // 버전 설정
+}
 
 repositories {
     mavenCentral()
@@ -12,20 +30,14 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    // JDBC 관련 의존성
-    implementation 'mysql:mysql-connector-java:8.0.26' // MySQL 연결을 위한 JDBC 드라이버
-    // HikariCP 의존성
-    implementation 'com.zaxxer:HikariCP:5.0.0'
-    // DBCP 의존성
+    implementation 'mysql:mysql-connector-java:8.0.26'
+    implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'org.apache.commons:commons-dbcp2:2.9.0'
-    // C3P0 의존성
     implementation 'com.mchange:c3p0:0.9.5.5'
-    // Jackson ObjectMapper 의존성 추가
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3' // 적절한 버전을 사용하세요
-    implementation 'org.slf4j:slf4j-api:2.0.0'  // SLF4J API
-    implementation 'ch.qos.logback:logback-classic:1.4.5'  // Logback 로깅 구현체
-
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
+    implementation 'org.slf4j:slf4j-api:2.0.0'
+    implementation 'ch.qos.logback:logback-classic:1.4.5'
 }
 
 test {
