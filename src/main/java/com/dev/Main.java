@@ -1,6 +1,9 @@
 package com.dev;
 
 
+import com.dev.database.Database;
+import com.dev.database.GeneralDatabase;
+import com.dev.database.SmartDatabase;
 import com.dev.datasource.DataSource;
 import com.dev.datasource.HikariCPDataSource;
 import com.dev.handler.*;
@@ -9,14 +12,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Main {
 
@@ -30,8 +29,8 @@ public class Main {
         String user = "root"; // 사용자 이름 (기본은 root)
         String password = "root"; // 비밀번호 (설정한 비밀번호)
         HikariCPDataSource dataSource = new HikariCPDataSource(url, user, password);
-
-        this.requestService = new RequestService(dataSource);
+        Database db = new SmartDatabase(dataSource);
+        this.requestService = new RequestService(db);
         this.handler = new AsyncRequestHandler(requestService);
     }
 
@@ -122,6 +121,7 @@ public class Main {
         StringBuilder requestBody = new StringBuilder();
         while ((line = in.readLine()) != null && !line.isEmpty()) {
             if (line.startsWith("Content-Length:")) {
+
                 int contentLength = Integer.parseInt(line.split(":")[1].trim());
                 char[] bodyBuffer = new char[contentLength];
                 in.read(bodyBuffer, 0, contentLength);

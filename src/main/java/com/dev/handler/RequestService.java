@@ -1,63 +1,51 @@
 package com.dev.handler;
 
-import com.dev.datasource.DataSource;
+import com.dev.database.Database;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Map;
 
 public class RequestService {
 
-    private final DataSource dataSource;
+    private static final Logger logger = LoggerFactory.getLogger(RequestService.class);
 
-    public RequestService(DataSource dataSource) {
-        this.dataSource = dataSource;
+    private final Database database;
+
+    public RequestService(Database database) {
+        this.database = database;
     }
 
     public String handlePost(Map<String, Object> request) {
-        // 비즈니스 로직 (예: 데이터베이스 삽입)
-        String userId = "3";  // 예시: 사용자 ID
-        String seatNumber = "10";  // 예시: 좌석 번호
-        System.out.println("시작");
-        // 데이터베이스에 저장
-        try (Connection connection = dataSource.getConnection()) {
-            String sql = "INSERT INTO test (user_id, seat_number) VALUES (?, ?)";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setString(1, userId);
-                statement.setString(2, seatNumber);
-                int rowsAffected = statement.executeUpdate();
+        logger.info("POST 요청 시작");
 
-                if (rowsAffected > 0) {
-                    System.out.println("User ID and seat number successfully inserted.");
-                    return "postSuccess";
-                } else {
-                    System.out.println("Failed to insert data.");
-                    return "postFailure";
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return "postError";
-        }
+        // 데이터베이스에 저장
+        database.reserve("1", "1");
+
+        logger.info("POST 처리 완료");
+
+        return "post success";
     }
 
     public String handleGet() {
-        // 비즈니스 로직 (예: 데이터베이스 조회)
-        System.out.println("Handling GET request with data: ");
+        logger.info("GET 요청 처리 중");
         return "getSuccess";
     }
 
     public String handlePut(Map<String, Object> request) {
-        // 비즈니스 로직 (예: 데이터 업데이트)
-        System.out.println("Handling PUT request with data: " + request);
-        return "putSuccess";
+        logger.info("PUT 요청 시작");
+
+        long startTime = System.currentTimeMillis();
+        Integer result = database.getTotalCount();
+        long endTime = System.currentTimeMillis();
+
+        logger.info("getTotalCount() 수행 시간: {}ms", (endTime - startTime));
+
+        return "putSuccess"+ result;
     }
 
     public String handleDelete(Map<String, Object> request) {
-        // 비즈니스 로직 (예: 데이터 삭제)
-        System.out.println("Handling DELETE request with data: " + request);
+        logger.info("DELETE 요청 처리 중: {}", request);
         return "deleteSuccess";
     }
 }
-
