@@ -9,7 +9,8 @@
 ### Main -> RequeustHandler -> RequestService -> DataBase
 ### Main <- RequesstHandler <- RequestService <- DataBase
 
-![ServerUml](https://github.com/user-attachments/assets/9252ca3b-6192-4b8e-8bb9-450191280f42)
+![423105816-9252ca3b-6192-4b8e-8bb9-450191280f42](https://github.com/user-attachments/assets/7a613f4c-1ada-414a-a465-73c95050fab3)
+
 
 1. Main에서 무한 루프를 돌면서 Accpet 되는지 확인하고
 2. Accept가 되었다면 해당 요청을 처리하기 위해 요청으로 변환함
