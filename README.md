@@ -5,6 +5,9 @@
 
 ## 1-1 전체 다이어그램
 
+### 요청 순서도 
+### Main -> RequeustHandler -> RequestService -> DataBase
+### Main <- RequesstHandler <- RequestService <- DataBase
 
 ![ServerUml](https://github.com/user-attachments/assets/9252ca3b-6192-4b8e-8bb9-450191280f42)
 
